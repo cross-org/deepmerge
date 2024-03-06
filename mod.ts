@@ -5,15 +5,17 @@
  */
 
 /**
- * Optional property to control how arrays are merged during the deep merge process.
- * Possible values:
- *   * 'concatenate': Combine arrays by appending elements (default behavior)
- *   * 'unique': Create a new array with only unique elements.
- *   * 'replace': Replace the target array entirely with the source array.
+ * Optional options interface to control the deep merge process.
+ *
+ * **arrayMergeStrategy:**
+ *   * **concatenate** (default): Combines arrays by appending elements.
+ *   * **unique**: Creates a new array with only unique elements.
+ *   * **replace**: Replaces the target array entirely with the source array. 
  */
 interface DeepMergeOptions {
     arrayMergeStrategy?: "concatenate" | "unique" | "replace";
-}
+  }
+  
 
 /**
  * Represents basic primitive JavaScript data types.

@@ -1,5 +1,8 @@
 # @cross/deepmerge
 
+[![JSR Version](https://jsr.io/badges/@cross/deepmerge)](https://jsr.io/@cross/deepmerge)
+[![JSR Score](https://jsr.io/badges/@cross/deepmerge/score)](https://jsr.io/@cross/deepmerge/score)
+
 ## Overview
 
 The deepMerge library offers a versatile and cross-runtime function for performing deep merges of objects in JavaScript
