@@ -37,6 +37,13 @@ npx jsr add @cross/deepmerge
 import { deepMerge } from "@cross/deepmerge";
 ```
 
+For browser you can use esm.sh as CDN to retrieve the ESM module for now.
+```javascript
+import { deepMerge } from "https://esm.sh/jsr/@cross/deepmerge";
+```
+Here is an simple example [jsfiddle](https://jsfiddle.net/pinta365/54gnohdb/) to try it out live in your browser.
+
+
 ## Usage
 
 Most basic usage of `deepMerge` is just to merge one or more objects into the first one:
