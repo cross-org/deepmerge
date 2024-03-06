@@ -1,0 +1,10 @@
+{
+    "tasks": {
+        "publish": "deno publish --config jsr.jsonc"
+    },
+    "lock": false,
+    "fmt": {
+        "lineWidth": 120,
+        "indentWidth": 4
+    }
+}
