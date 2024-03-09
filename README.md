@@ -5,20 +5,22 @@
 
 ## Overview
 
-The deepMerge library offers a versatile and cross-runtime function for performing deep merges of objects in JavaScript
-environments, including Deno, Bun, and Node.js. It is designed to handle complex data structures, including arrays,
-Maps, Sets, and primitive values, with customizable behavior for array merging.
+Cross-runtime deep object merging in JavaScript environments, including Deno, Bun, Node.js and Browser. It is designed to handle complex data structures, including arrays, Maps, Sets, and primitive values. It provides flexible customization options for handling array, Set, and Map merging strategies.
 
 ## Features
 
-- **Deep Merging:** Recursively merges objects, including handling of Maps, Sets, and arrays, ensuring a deep
-  integration of source objects into a target object.
-- **Customizable Array Merging Strategies:** Offers three strategies for array merging:
-  - `concatenate` (default): Combines arrays by appending elements from the source array to the target array.
-  - `unique`: Merges arrays by creating a new array with only unique elements from both the source and target arrays.
-  - `replace`: Replaces the target array entirely with the source array.
-- **Cross-Platform Compatibility:** Works consistently across Deno, Bun, and Node.js environments, making it a flexible
-  choice for various JavaScript projects.
+* **Cross-Runtime Compatibility:**
+* **Deep Merging:** Recursively combines objects at all levels of nesting.
+* **Array Merging Customization:** Choose among strategies:
+    * `combine` (default): Concatenates arrays, preserves duplicates.
+    * `unique`: Produces an array of unique elements.
+    * `replace`: Overwrites the target array with the source array.
+* **Set Merging Customization:** Select between strategies:
+    * `combine` (default): Adds new set elements.
+    * `replace`: Overwrites the target set with the source set.
+* **Map Merging Customization:** Select between strategies:
+    * `combine` (default): Adds new entries, replaces entries with the same key.
+    * `replace`: Overwrites the target map with the source map.
 
 ## Installation
 
@@ -38,84 +40,67 @@ import { deepMerge } from "@cross/deepmerge";
 ```
 
 For browser you can use esm.sh as CDN to retrieve the ESM module for now.
+
 ```javascript
 import { deepMerge } from "https://esm.sh/jsr/@cross/deepmerge";
 ```
-Here is an simple example [jsfiddle](https://jsfiddle.net/pinta365/54gnohdb/) to try it out live in your browser.
 
+Here is an simple example [jsfiddle](https://jsfiddle.net/pinta365/54gnohdb/) to try it out live in your browser.
 
 ## Usage
 
-Most basic usage of `deepMerge` is just to merge one or more objects into the first one:
+Most basic usage of `deepMerge` is just to merge one or more objects:
 
 ```javascript
 const object1 = { a: 1, b: { c: 2 } };
 const object2 = { b: { d: 3 }, e: 4 };
 
-deepMerge(object1, object2);
-console.log(object1);
+const merged = deepMerge(object1, object2);
+console.log(merged);
 // Output: { a: 1, b: { c: 2, d: 3 }, e: 4 }
 ```
 
 Below is an more advanced example that showcases the usage of the `deepMerge` library with more complex objects,
-including Maps and Sets, along with a unique array merging strategy.
+including Maps and Sets, along with a options strategies.
 
 ```javascript
 import { deepMerge, DeepMergeOptions } from "@cross/deepmerge";
 
 // Define the merging options
-const options: DeepMergeOptions = { arrayMergeStrategy: "unique" };
-
-// Create complex objects including arrays, Maps, and Sets
-const one = {
-  arrayProp: [1, 2, 3],
-  mapProp: new Map([['key1', 'value1'], ['key2', 'value2']]),
-  setProp: new Set([1, 2, 3]),
-  nested: {
-    nestedArray: [1, 2, 3],
-    nestedMap: new Map([['nestedKey1', 10], ['nestedKey2', 20]]),
-    nestedSet: new Set(['a', 'b', 'c'])
-  }
+const options: DeepMergeOptions = {
+    arrayMergeStrategy: "unique",
+    setMergeStrategy: "combine",
+    mapMergeStrategy: "combine"
 };
 
-const two = {
-  arrayProp: [2, 3, 4, 5],
-  mapProp: new Map([['key2', 'updatedValue2'], ['key3', 'value3']]),
-  setProp: new Set([2, 3, 4]),
-  nested: {
-    nestedArray: [3, 4, 5],
-    nestedMap: new Map([['nestedKey2', 25], ['nestedKey3', 30]]),
-    nestedSet: new Set(['b', 'c', 'd'])
-  },
-  oneExtraProp: "Hello"
+const obj1 = {
+    arr: [1, 2, 3],
+    mySet: new Set(["a", "b"]),
+    myMap: new Map([["x", 1], ["y", 2]])
 };
 
-// Perform the deep merge with custom options
-const mergedObject = deepMerge.withOptions(options, one, two);
+const obj2 = {
+    arr: [3, 4, 5],
+    mySet: new Set(["c"]),
+    myMap: new Map([["y", 3]])
+};
 
-// Print the merged object
-console.log(mergedObject);
+const merged = deepMerge.withOptions(options, obj1, obj2);
 
-// Expected output will show unique array merging, combined Maps and Sets, and deep merged nested objects.
-// For example:
+console.log(merged);
+// Output:
 // {
-//   arrayProp: [1, 2, 3, 4, 5],
-//   mapProp: Map { 'key1' => 'value1', 'key2' => 'updatedValue2', 'key3' => 'value3' },
-//   setProp: Set { 1, 2, 3, 4 },
-//   nested: {
-//     nestedArray: [1, 2, 3, 4, 5],
-//     nestedMap: Map { 'nestedKey1' => 10, 'nestedKey2' => 25, 'nestedKey3' => 30 },
-//     nestedSet: Set { 'a', 'b', 'c', 'd' }
-//   },
-//   oneExtraProp: "Hello"
+//   arr: [1, 2, 3, 4, 5],
+//   mySet: new Set(["a", "b", "c"]),
+//   myMap: new Map([["x", 1], ["y", 3]]) 
 // }
 ```
 
-Below demonstrates a set of default or standard configurations that can be customized or overridden by user-specified
+Below demonstrates a possible use case of default or standard configurations that can be customized or overridden by user-specified
 configurations.
 
 ```javascript
-import { deepMerge } from "./mod.ts";
+import { deepMerge } from "@cross/deepmerge";
 
 // Standard application configurations
 const defaultConfig = {
@@ -152,7 +137,7 @@ console.log(mergedConfig);
 //     header: "visible",
 //     footer: "visible",
 //   },
-//   plugins: ["plugin3"], // Replaced by userConfig
+//   plugins: ["plugin3"], // replaced by userConfig
 //   advanced: {
 //     cache: true, // Inherits from defaultConfig
 //     cacheSize: 2048, // Overridden by userConfig
@@ -160,46 +145,27 @@ console.log(mergedConfig);
 // }
 ```
 
-### Customizing array merge strategy
-
-To customize the array merging strategy, use the `withOptions` method:
-
-```javascript
-const options = { arrayMergeStrategy: "unique" };
-const one = { arrayProp: [1, 2, 3] };
-const two = { arrayProp: [2, 3, 4, 5] };
-
-const mergedObject = deepMerge.withOptions(options, one, two);
-console.log(mergedObject);
-// Output: { arrayProp: [1, 2, 3, 4, 5] } // with 'unique' strategy
-
-// Example with other strategies
-// Output: { arrayProp: [1, 2, 3, 2, 3, 4, 5] } // with 'concatenate' strategy
-// Output: { arrayProp: [2, 3, 4, 5] } // with 'replace' strategy
-```
-
 ## API Reference
 
 For detailed docs see the [JSR docs](https://jsr.io/@cross/deepmerge/doc)
 
-### `deepMerge(target, ...sources)`
+### `deepMerge(...sources)`
 
-### `deepMerge.withOptions(options, target, ...sources)`
+### `deepMerge.withOptions(options, ...sources)`
 
 #### `DeepMergeOptions`
+* **`arrayMergeStrategy`**
+     * **"combine"**: (default behavior) Appends arrays, preserving duplicates.
+     * **"unique"**: Creates an array with only unique elements.
+     * **"replace"**: Substitutes the target array entirely with the source array.
 
-An interface to control the behavior of the deep merge process, especially regarding how arrays are handled during the
-merge. The following properties can be configured:
+* **`setMergeStrategy`**
+     * **"combine"**: (default behavior) Adds new members to the target Set.
+     * **"replace"**: Overwrites the target Set with the source Set.
 
-- `arrayMergeStrategy`: Specifies the strategy used to merge arrays. Possible values include:
-  - `concatenate` (default): Combines arrays by appending the elements of the source array to those of the target array.
-  - `unique`: Merges arrays by creating a new array containing only unique elements from both the target and the source
-    arrays, eliminating duplicates.
-  - `replace`: Replaces the target array entirely with the source array, disregarding any existing elements in the
-    target.
-
-## Known issues
-No support for breaking on circular references.
+* **`mapMergeStrategy`**
+     * **"combine"**: (default behavior) Merges with the source Map, replacing values for matching keys.
+     * **"replace"**: Overwrites the target Map with the source Map.
 
 ## Issues
 

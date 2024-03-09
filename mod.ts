@@ -7,15 +7,24 @@
 /**
  * Optional options interface to control the deep merge process.
  *
- * **arrayMergeStrategy:**
- *   * **concatenate** (default): Combines arrays by appending elements.
- *   * **unique**: Creates a new array with only unique elements.
- *   * **replace**: Replaces the target array entirely with the source array. 
+ ** **`arrayMergeStrategy`**
+ *     * **"combine"**: (default behavior) Appends arrays, preserving duplicates.
+ *     * **"unique"**: Creates an array with only unique elements.
+ *     * **"replace"**: Substitutes the target array entirely with the source array.
+ *
+ ** **`setMergeStrategy`**
+ *     * **"combine"**: (default behavior) Adds new members to the target Set.
+ *     * **"replace"**: Overwrites the target Set with the source Set.
+ *
+ ** **`mapMergeStrategy`**
+ *     * **"combine"**: (default behavior) Merges with the source Map, replacing values for matching keys.
+ *     * **"replace"**: Overwrites the target Map with the source Map.
  */
 interface DeepMergeOptions {
-    arrayMergeStrategy?: "concatenate" | "unique" | "replace";
-  }
-  
+    arrayMergeStrategy?: "combine" | "unique" | "replace";
+    setMergeStrategy?: "combine" | "replace";
+    mapMergeStrategy?: "combine" | "replace";
+}
 
 /**
  * Represents basic primitive JavaScript data types.
@@ -54,7 +63,7 @@ type MergeableValue =
  * values can be any mergeable type (including nested objects, Maps,
  * Sets, arrays, or primitives).
  */
-export interface MergeableObject {
+interface MergeableObject {
     [key: string | number | symbol]: MergeableValue;
 }
 
@@ -83,8 +92,10 @@ function isObject(item: unknown): item is MergeableObject {
  * @param {...T} sources - One or more source objects to merge.
  * @returns {T} The merged result.
  */
-function deepMerge<T>(target: T, ...sources: T[]): T {
-    return deepMergeCore(target, {}, ...sources);
+function deepMerge<T>(...sources: T[]): T {
+  const result = {} as T;
+  const visited = new WeakMap<object, MergeableValue>(); 
+  return deepMergeCore(result, {}, visited, ...sources);
 }
 
 /**
@@ -92,12 +103,13 @@ function deepMerge<T>(target: T, ...sources: T[]): T {
  *
  * @template T
  * @param {DeepMergeOptions} options - Options to control the merge behavior.
- * @param {T} target - The initial object to merge.
  * @param {...T} sources - Source objects.
  * @returns {T} The merged result.
  */
-deepMerge.withOptions = function <T>(options: DeepMergeOptions, target: T, ...sources: T[]): T {
-    return deepMergeCore(target, options, ...sources);
+deepMerge.withOptions = function <T>(options: DeepMergeOptions, ...sources: T[]): T {
+    const result = {} as T;
+    const visited = new WeakMap<object, MergeableValue>(); 
+    return deepMergeCore(result, options, visited, ...sources);
 };
 
 /**
@@ -106,62 +118,87 @@ deepMerge.withOptions = function <T>(options: DeepMergeOptions, target: T, ...so
  * into account the provided merge options.
  *
  * @template T
- * @param {T} target - The current target object being merged into.
  * @param {DeepMergeOptions} options - Controls merge behavior, particularly for arrays.
  * @param {...T} sources - One or more source objects to merge (processed recursively).
  * @returns {T} The deeply merged result.
  */
-function deepMergeCore<T>(target: T, options: DeepMergeOptions, ...sources: T[]): T {
-    const targetObject = target as MergeableObject;
-
-    if (!sources.length) return target;
-    const source = sources.shift();
-
-    if (isObject(targetObject) && isObject(source)) {
-        for (const key in source) {
-            if (source[key] instanceof Map) {
-                targetObject[key] = new Map([
-                    ...(targetObject[key] as MergeableMap) || [],
-                    ...(source[key] as MergeableMap),
-                ]);
-            } else if (source[key] instanceof Set) {
-                targetObject[key] = new Set([
-                    ...(targetObject[key] as MergeableSet) || [],
-                    ...(source[key] as MergeableSet),
-                ]);
-            } else if (Array.isArray(source[key])) {
-                switch (options.arrayMergeStrategy) {
-                    case "unique":
-                        targetObject[key] = Array.from(
-                            new Set([
-                                ...(targetObject[key] as MergeableArray) || [],
-                                ...(source[key] as MergeableArray),
-                            ]),
-                        );
-                        break;
-                    case "replace":
-                        targetObject[key] = source[key];
-                        break;
-                    case "concatenate":
-                    default:
-                        targetObject[key] = [
-                            ...(targetObject[key] as MergeableArray) || [],
-                            ...(source[key] as MergeableArray),
-                        ];
-                        break;
-                }
-            } else if (isObject(source[key])) {
-                const sourceValue = source[key];
-                const targetValue = targetObject[key];
-                targetObject[key] = deepMergeCore(targetValue || {}, options, sourceValue);
-            } else {
-                targetObject[key] = source[key];
-            }
+  function deepMergeCore<T>(
+    current: T,
+    options: DeepMergeOptions,
+    visited: WeakMap<object, MergeableValue>,
+    ...sources: T[] 
+  ): T {
+    if (!sources.length) return current;
+    const source = sources.shift() as MergeableObject;
+  
+    if (isObject(source)) {
+      if (visited.has(source)) {
+        return visited.get(source) as T;
+      }
+  
+      visited.set(source, current as MergeableObject);
+  
+      for (const key in source) {
+        const sourceValue = source[key];
+  
+        if (sourceValue instanceof Map) {
+          switch (options.mapMergeStrategy) {
+            case "replace":
+            (current as MergeableObject)[key] = new Map(sourceValue as MergeableMap);
+              break;
+            case "combine":
+            default:
+                (current as MergeableObject)[key] = new Map([
+                ...((current as MergeableObject)[key] as MergeableMap) || [],
+                ...(sourceValue as MergeableMap),
+              ]);
+          }
+        } else if (sourceValue instanceof Set) {
+          switch (options.setMergeStrategy) {
+            case "replace":
+                (current as MergeableObject)[key] = new Set(sourceValue as MergeableSet);
+              break;
+            case "combine":
+            default:
+                (current as MergeableObject)[key] = new Set([
+                ...((current as MergeableObject)[key] as MergeableSet) || [],
+                ...(sourceValue as MergeableSet),
+              ]);
+          }
+        } else if (Array.isArray(sourceValue)) {
+          switch (options.arrayMergeStrategy) {
+            case "unique":
+                (current as MergeableObject)[key] = Array.from(
+                new Set([
+                  ...((current as MergeableObject)[key] as MergeableArray) || [],
+                  ...(sourceValue as MergeableArray),
+                ])
+              );
+              break;
+            case "replace":
+                (current as MergeableObject)[key] = sourceValue;
+              break;
+            case "combine":
+            default:
+                (current as MergeableObject)[key] = [
+                ...((current as MergeableObject)[key] as MergeableArray) || [],
+                ...(sourceValue as MergeableArray),
+              ];
+          }
+        } else if (isObject(sourceValue)) {
+          (current as MergeableObject)[key] = (current as MergeableObject)[key] || {};
+          (current as MergeableObject)[key] = deepMergeCore((current as MergeableObject)[key] as MergeableObject, options, visited, sourceValue);
+        } else {
+          (current as MergeableObject)[key] = sourceValue;
         }
+      }
+    } else {
+      return source as T;
     }
-
-    return deepMergeCore(targetObject as T, options, ...sources);
-}
-
+  
+    return deepMergeCore(current, options, visited, ...sources);
+  }
+  
 export { deepMerge };
 export type { DeepMergeOptions };
+
