@@ -7,6 +7,8 @@
 
 Cross-runtime deep object merging in JavaScript environments, including Deno, Bun, Node.js and Browser. It is designed to handle complex data structures, including arrays, Maps, Sets, and primitive values. It provides flexible customization options for handling array, Set, and Map merging strategies.
 
+Follow the library on [JSR.io](https://jsr.io/@cross/deepmerge)
+
 ## Features
 
 * **Cross-Runtime Compatibility:**
