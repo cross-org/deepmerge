@@ -5,24 +5,26 @@
 
 ## Overview
 
-Cross-runtime deep object merging in JavaScript environments, including Deno, Bun, Node.js and Browser. It is designed to handle complex data structures, including arrays, Maps, Sets, and primitive values. It provides flexible customization options for handling array, Set, and Map merging strategies.
+Cross-runtime deep object merging in JavaScript environments, including Deno, Bun, Node.js and Browser. It is designed
+to handle complex data structures, including arrays, Maps, Sets, and primitive values. It provides flexible
+customization options for handling array, Set, and Map merging strategies.
 
 Follow the library on [JSR.io](https://jsr.io/@cross/deepmerge)
 
 ## Features
 
-* **Cross-Runtime Compatibility:**
-* **Deep Merging:** Recursively combines objects at all levels of nesting.
-* **Array Merging Customization:** Choose among strategies:
-    * `combine` (default): Concatenates arrays, preserves duplicates.
-    * `unique`: Produces an array of unique elements.
-    * `replace`: Overwrites the target array with the source array.
-* **Set Merging Customization:** Select between strategies:
-    * `combine` (default): Adds new set elements.
-    * `replace`: Overwrites the target set with the source set.
-* **Map Merging Customization:** Select between strategies:
-    * `combine` (default): Adds new entries, replaces entries with the same key.
-    * `replace`: Overwrites the target map with the source map.
+- **Cross-Runtime Compatibility:**
+- **Deep Merging:** Recursively combines objects at all levels of nesting.
+- **Array Merging Customization:** Choose among strategies:
+  - `combine` (default): Concatenates arrays, preserves duplicates.
+  - `unique`: Produces an array of unique elements.
+  - `replace`: Overwrites the target array with the source array.
+- **Set Merging Customization:** Select between strategies:
+  - `combine` (default): Adds new set elements.
+  - `replace`: Overwrites the target set with the source set.
+- **Map Merging Customization:** Select between strategies:
+  - `combine` (default): Adds new entries, replaces entries with the same key.
+  - `replace`: Overwrites the target map with the source map.
 
 ## Installation
 
@@ -98,8 +100,8 @@ console.log(merged);
 // }
 ```
 
-Below demonstrates a possible use case of default or standard configurations that can be customized or overridden by user-specified
-configurations.
+Below demonstrates a possible use case of default or standard configurations that can be customized or overridden by
+user-specified configurations.
 
 ```javascript
 import { deepMerge } from "@cross/deepmerge";
@@ -156,18 +158,19 @@ For detailed docs see the [JSR docs](https://jsr.io/@cross/deepmerge/doc)
 ### `deepMerge.withOptions(options, ...sources)`
 
 #### `DeepMergeOptions`
-* **`arrayMergeStrategy`**
-     * **"combine"**: (default behavior) Appends arrays, preserving duplicates.
-     * **"unique"**: Creates an array with only unique elements.
-     * **"replace"**: Substitutes the target array entirely with the source array.
 
-* **`setMergeStrategy`**
-     * **"combine"**: (default behavior) Adds new members to the target Set.
-     * **"replace"**: Overwrites the target Set with the source Set.
+- **`arrayMergeStrategy`**
+  - **"combine"**: (default behavior) Appends arrays, preserving duplicates.
+  - **"unique"**: Creates an array with only unique elements.
+  - **"replace"**: Substitutes the target array entirely with the source array.
 
-* **`mapMergeStrategy`**
-     * **"combine"**: (default behavior) Merges with the source Map, replacing values for matching keys.
-     * **"replace"**: Overwrites the target Map with the source Map.
+- **`setMergeStrategy`**
+  - **"combine"**: (default behavior) Adds new members to the target Set.
+  - **"replace"**: Overwrites the target Set with the source Set.
+
+- **`mapMergeStrategy`**
+  - **"combine"**: (default behavior) Merges with the source Map, replacing values for matching keys.
+  - **"replace"**: Overwrites the target Map with the source Map.
 
 ## Issues
 
