@@ -88,15 +88,15 @@ function isObject(item: unknown): item is MergeableObject {
  * Supports multiple source objects.
  *
  * **Customizing Behavior with the attached `deepMerge.withOptions()` method**
- * 
+ *
  * `.withOptions()` allows you to create a modified version of `deepMerge` with
  * pre-configured merge behavior. For instance:
  *
  * ```javascript
  * const combineUniqueArrays = deepMerge.withOptions({ arrayMergeStrategy: 'unique' });
- * 
- * const combined = combineUniqueArrays({ arr: [1, 2] }, { arr: [2, 3] }); 
- * 
+ *
+ * const combined = combineUniqueArrays({ arr: [1, 2] }, { arr: [2, 3] });
+ *
  * // combined.arr = [1, 2, 3]
  * ```
  *

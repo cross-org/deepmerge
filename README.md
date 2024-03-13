@@ -41,27 +41,41 @@ npx jsr add @cross/deepmerge
 
 ```javascript
 import { deepMerge } from "@cross/deepmerge";
+//or for simple object merging.
+import { simpleMerge } from "@cross/deepmerge";
 ```
 
 For browser you can use esm.sh as CDN to retrieve the ESM module for now.
 
 ```javascript
 import { deepMerge } from "https://esm.sh/jsr/@cross/deepmerge";
+//or for simple object merging.
+import { simpleMerge } from "@cross/deepmerge";
 ```
 
 Here is an simple example [jsfiddle](https://jsfiddle.net/pinta365/54gnohdb/) to try it out live in your browser.
 
 ## Usage
 
-Most basic usage of `deepMerge` is just to merge one or more objects:
+Most basic usage of `simpleMerge` and `deepMerge` is just to merge one or more objects:
 
 ```javascript
-const object1 = { a: 1, b: { c: 2 } };
-const object2 = { b: { d: 3 }, e: 4 };
+// Example interface of the object we are merging.
+interface MergeableObj {
+    a?: number;
+    b?: {
+        c?: number;
+        d?: number;
+    };
+    e?: number;
+}
 
-const merged = deepMerge(object1, object2);
+const object1: MergeableObj = { a: 1, b: { c: 2 } };
+const object2: MergeableObj = { b: { c:1, d: 3 }, e: 4 };
+
+const merged = simpleMerge(object1, object2); //We don't need deepMerge for this simple object.
 console.log(merged);
-// Output: { a: 1, b: { c: 2, d: 3 }, e: 4 }
+// Output: { a: 1, b: { c: 1, d: 3 }, e: 4 }
 ```
 
 Below is an more advanced example that showcases the usage of the `deepMerge` library with more complex objects,
@@ -153,9 +167,18 @@ console.log(mergedConfig);
 
 For detailed docs see the [JSR docs](https://jsr.io/@cross/deepmerge/doc)
 
+### `simpleMerge(...sources)`
+
+Simple object deep merger that can be used for most objects situations where you need to merge objects without arrays,
+sets and maps.
+
 ### `deepMerge(...sources)`
 
+More complex object deep merger that handles arrays, sets and maps also.
+
 ### `deepMerge.withOptions(options, ...sources)`
+
+Same as above but with options as seen below.
 
 #### `DeepMergeOptions`
 
