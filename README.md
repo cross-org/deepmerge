@@ -50,7 +50,7 @@ For browser you can use esm.sh as CDN to retrieve the ESM module for now.
 ```javascript
 import { deepMerge } from "https://esm.sh/jsr/@cross/deepmerge";
 //or for simple object merging.
-import { simpleMerge } from "@cross/deepmerge";
+import { simpleMerge } from "https://esm.sh/jsr/@cross/deepmerge";
 ```
 
 Here is an simple example [jsfiddle](https://jsfiddle.net/pinta365/54gnohdb/) to try it out live in your browser.
