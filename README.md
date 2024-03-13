@@ -5,24 +5,26 @@
 
 ## Overview
 
-Cross-runtime deep object merging in JavaScript environments, including Deno, Bun, Node.js and Browser. It is designed to handle complex data structures, including arrays, Maps, Sets, and primitive values. It provides flexible customization options for handling array, Set, and Map merging strategies.
+Cross-runtime deep object merging in JavaScript environments, including Deno, Bun, Node.js and Browser. It is designed
+to handle complex data structures, including arrays, Maps, Sets, and primitive values. It provides flexible
+customization options for handling array, Set, and Map merging strategies.
 
 Follow the library on [JSR.io](https://jsr.io/@cross/deepmerge)
 
 ## Features
 
-* **Cross-Runtime Compatibility:**
-* **Deep Merging:** Recursively combines objects at all levels of nesting.
-* **Array Merging Customization:** Choose among strategies:
-    * `combine` (default): Concatenates arrays, preserves duplicates.
-    * `unique`: Produces an array of unique elements.
-    * `replace`: Overwrites the target array with the source array.
-* **Set Merging Customization:** Select between strategies:
-    * `combine` (default): Adds new set elements.
-    * `replace`: Overwrites the target set with the source set.
-* **Map Merging Customization:** Select between strategies:
-    * `combine` (default): Adds new entries, replaces entries with the same key.
-    * `replace`: Overwrites the target map with the source map.
+- **Cross-Runtime Compatibility:**
+- **Deep Merging:** Recursively combines objects at all levels of nesting.
+- **Array Merging Customization:** Choose among strategies:
+  - `combine` (default): Concatenates arrays, preserves duplicates.
+  - `unique`: Produces an array of unique elements.
+  - `replace`: Overwrites the target array with the source array.
+- **Set Merging Customization:** Select between strategies:
+  - `combine` (default): Adds new set elements.
+  - `replace`: Overwrites the target set with the source set.
+- **Map Merging Customization:** Select between strategies:
+  - `combine` (default): Adds new entries, replaces entries with the same key.
+  - `replace`: Overwrites the target map with the source map.
 
 ## Installation
 
@@ -39,27 +41,41 @@ npx jsr add @cross/deepmerge
 
 ```javascript
 import { deepMerge } from "@cross/deepmerge";
+//or for simple object merging.
+import { simpleMerge } from "@cross/deepmerge";
 ```
 
 For browser you can use esm.sh as CDN to retrieve the ESM module for now.
 
 ```javascript
 import { deepMerge } from "https://esm.sh/jsr/@cross/deepmerge";
+//or for simple object merging.
+import { simpleMerge } from "https://esm.sh/jsr/@cross/deepmerge";
 ```
 
 Here is an simple example [jsfiddle](https://jsfiddle.net/pinta365/54gnohdb/) to try it out live in your browser.
 
 ## Usage
 
-Most basic usage of `deepMerge` is just to merge one or more objects:
+Most basic usage of `simpleMerge` and `deepMerge` is just to merge one or more objects:
 
 ```javascript
-const object1 = { a: 1, b: { c: 2 } };
-const object2 = { b: { d: 3 }, e: 4 };
+// Example interface of the object we are merging.
+interface MergeableObj {
+    a?: number;
+    b?: {
+        c?: number;
+        d?: number;
+    };
+    e?: number;
+}
 
-const merged = deepMerge(object1, object2);
+const object1: MergeableObj = { a: 1, b: { c: 2 } };
+const object2: MergeableObj = { b: { c:1, d: 3 }, e: 4 };
+
+const merged = simpleMerge(object1, object2); //We don't need deepMerge for this simple object.
 console.log(merged);
-// Output: { a: 1, b: { c: 2, d: 3 }, e: 4 }
+// Output: { a: 1, b: { c: 1, d: 3 }, e: 4 }
 ```
 
 Below is an more advanced example that showcases the usage of the `deepMerge` library with more complex objects,
@@ -98,8 +114,8 @@ console.log(merged);
 // }
 ```
 
-Below demonstrates a possible use case of default or standard configurations that can be customized or overridden by user-specified
-configurations.
+Below demonstrates a possible use case of default or standard configurations that can be customized or overridden by
+user-specified configurations.
 
 ```javascript
 import { deepMerge } from "@cross/deepmerge";
@@ -151,23 +167,33 @@ console.log(mergedConfig);
 
 For detailed docs see the [JSR docs](https://jsr.io/@cross/deepmerge/doc)
 
+### `simpleMerge(...sources)`
+
+Simple object deep merger that can be used for most objects situations where you need to merge objects without arrays,
+sets and maps.
+
 ### `deepMerge(...sources)`
+
+More complex object deep merger that handles arrays, sets and maps also.
 
 ### `deepMerge.withOptions(options, ...sources)`
 
+Same as above but with options as seen below.
+
 #### `DeepMergeOptions`
-* **`arrayMergeStrategy`**
-     * **"combine"**: (default behavior) Appends arrays, preserving duplicates.
-     * **"unique"**: Creates an array with only unique elements.
-     * **"replace"**: Substitutes the target array entirely with the source array.
 
-* **`setMergeStrategy`**
-     * **"combine"**: (default behavior) Adds new members to the target Set.
-     * **"replace"**: Overwrites the target Set with the source Set.
+- **`arrayMergeStrategy`**
+  - **"combine"**: (default behavior) Appends arrays, preserving duplicates.
+  - **"unique"**: Creates an array with only unique elements.
+  - **"replace"**: Substitutes the target array entirely with the source array.
 
-* **`mapMergeStrategy`**
-     * **"combine"**: (default behavior) Merges with the source Map, replacing values for matching keys.
-     * **"replace"**: Overwrites the target Map with the source Map.
+- **`setMergeStrategy`**
+  - **"combine"**: (default behavior) Adds new members to the target Set.
+  - **"replace"**: Overwrites the target Set with the source Set.
+
+- **`mapMergeStrategy`**
+  - **"combine"**: (default behavior) Merges with the source Map, replacing values for matching keys.
+  - **"replace"**: Overwrites the target Map with the source Map.
 
 ## Issues
 

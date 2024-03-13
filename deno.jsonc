@@ -1,6 +1,10 @@
 {
+    "name": "@cross/deepmerge",
+    "version": "0.1.1",
+    "exports": "./mod.ts",
+
     "tasks": {
-        "publish": "deno publish --config jsr.jsonc"
+        "publish-dry": "deno publish --dry-run"
     },
     "lock": false,
     "fmt": {
