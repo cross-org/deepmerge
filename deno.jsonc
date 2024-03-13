@@ -4,11 +4,13 @@
     "exports": "./mod.ts",
 
     "tasks": {
+        "test": "cd tests && deno test",
         "publish-dry": "deno publish --dry-run"
     },
     "lock": false,
     "fmt": {
         "lineWidth": 120,
         "indentWidth": 4
-    }
+    },
+    "imports": { "@cross/test": "jsr:@cross/test@^0.0.8", "@std/assert": "jsr:@std/assert@^0.219.1" }
 }
