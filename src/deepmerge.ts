@@ -19,11 +19,39 @@
  ** **`mapMergeStrategy`**
  *     * **"combine"**: (default behavior) Merges with the source Map, replacing values for matching keys.
  *     * **"replace"**: Overwrites the target Map with the source Map.
+ ** **`dateMergeStrategy`**
+ *     * **"replace"**: (default behavior) Overwrites the target Date with the source Date.
+ *     * **"keepEarlier"**: Keeps the earlier Date
+ *     * **"keepLater"**: Keeps the later Date
+ ** **`customMergeFunctions`**
+ *     * Allows specifying custom merge functions for handling specific types or structures during the merge process.
+ *     * Each key in this object corresponds to the constructor name of the value to be merged.
+ *     * The function assigned to each key is used to merge values of that type.
+ *     * **Key**: The constructor name of the values to be merged (e.g., "Date").
+ *     * **Value**: A function that takes two parameters (`targetVal`, `sourceVal`) and returns the merged result.
+ *     * Example:
+ *         ```typescript
+ *         {
+ *             Date: (targetVal, sourceVal) => {
+ *                 return targetVal < sourceVal ? targetVal : sourceVal;
+ *             },
+ *             Array: (targetArr, sourceArr) => {
+ *                 if (!Array.isArray(targetArr)) {
+ *                     targetArr = [];
+ *                 }
+ *                 if (!Array.isArray(sourceArr)) {
+ *                     sourceArr = [];
+ *                 }
+ *                 return [...new Set([...targetArr, ...sourceArr])];
+ *             }
+ *         }
+ *         ```
  */
 interface DeepMergeOptions {
     arrayMergeStrategy?: "combine" | "unique" | "replace";
     setMergeStrategy?: "combine" | "replace";
     mapMergeStrategy?: "combine" | "replace";
+    dateMergeStrategy?: "replace" | "keepEarlier" | "keepLater";
     customMergeFunctions?: {
         // deno-lint-ignore no-explicit-any
         [key: string]: (targetVal: any, sourceVal: any) => any; // For custom functions
@@ -209,6 +237,28 @@ function deepMergeCore<T>(
                             ...((current as MergeableObject)[key] as MergeableArray) || [],
                             ...(sourceValue as MergeableArray),
                         ];
+                }
+            } else if (sourceValue instanceof Date) {
+                if (!((current as MergeableObject)[key] instanceof Date)) {
+                    (current as MergeableObject)[key] = sourceValue;
+                } else {
+                    const targetGetTime = ((current as MergeableObject)[key] as unknown as Date).getTime();
+                    const sourceGetTime = sourceValue.getTime();
+
+                    switch (options.dateMergeStrategy) {
+                        case "keepEarlier":
+                            (current as MergeableObject)[key] = targetGetTime < sourceGetTime
+                                ? (current as MergeableObject)[key]
+                                : sourceValue;
+                            break;
+                        case "keepLater":
+                            (current as MergeableObject)[key] = targetGetTime > sourceGetTime
+                                ? (current as MergeableObject)[key]
+                                : sourceValue;
+                            break;
+                        default:
+                            (current as MergeableObject)[key] = sourceValue;
+                    }
                 }
             } else if (isObject(sourceValue)) {
                 (current as MergeableObject)[key] = (current as MergeableObject)[key] || {};
