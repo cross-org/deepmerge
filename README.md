@@ -25,6 +25,12 @@ Follow the library on [JSR.io](https://jsr.io/@cross/deepmerge)
 - **Map Merging Customization:** Select between strategies:
   - `combine` (default): Adds new entries, replaces entries with the same key.
   - `replace`: Overwrites the target map with the source map.
+- **Date Merging Customization:** Select between strategies:
+  - `replace` (default): Overwrites the target Date with the source Date.
+  - `keepEarlier`: Keeps the earlier Date.
+  - `keepLater`: Keeps the later Date.
+- **Supply custom merging functions:** Allows specifying custom merge functions for handling specific types or
+  structures during the merge process.
 
 ## Installation
 
@@ -163,6 +169,48 @@ console.log(mergedConfig);
 // }
 ```
 
+This showcase the custom merging function to override the default merging functions.
+
+```javascript
+import { deepMerge, DeepMergeOptions } from "@cross/deepmerge";
+
+// Define the merging options.
+// Use latest date for Date types
+// Store unique array values for Array keys
+const options: DeepMergeOptions = {
+    customMergeFunctions: {
+        /* This will be used as date merger function instead of the default ones */
+        Date: (targetVal, sourceVal) => {
+            return targetVal > sourceVal ? targetVal : sourceVal;
+        },
+        /* This will be used as array merger function instead of the default ones */
+        Array: (targetArr, sourceArr) => {
+            if (!Array.isArray(targetArr)) {
+                targetArr = [];
+            }
+            if (!Array.isArray(sourceArr)) {
+                sourceArr = [];
+            }
+            return [...new Set([...targetArr, ...sourceArr])];
+        }
+    }
+};
+
+const obj1 = { a: 1, b: { c: 2 }, e: [1, 2, 3, 4], date: new Date("2023-12-20") };
+const obj2 = { b: { c: 1, d: 3 }, e: [3, 4, 5], date: new Date("2024-01-15") };
+const obj3 = { b: { c: 1, d: 3 }, e: [3, 4, 5], date: new Date("2023-01-02") };
+
+const merged = deepMerge.withOptions(options, obj1, obj2, obj3);
+console.log(merged);
+// Output:
+//{
+//  a: 1,
+//  b: { c: 1, d: 3 },
+//  e: [ 1, 2, 3, 4, 5 ],
+//  date: 2024-01-15T00:00:00.000Z
+//}
+```
+
 ## API Reference
 
 For detailed docs see the [JSR docs](https://jsr.io/@cross/deepmerge/doc)
@@ -194,6 +242,18 @@ Same as above but with options as seen below.
 - **`mapMergeStrategy`**
   - **"combine"**: (default behavior) Merges with the source Map, replacing values for matching keys.
   - **"replace"**: Overwrites the target Map with the source Map.
+
+- **`dateMergeStrategy`**
+  - **"replace"**: (default behavior) Overwrites the target Date with the source Date.
+  - **"keepEarlier"**: Keeps the earlier Date
+  - **"keepLater"**: Keeps the later Date
+
+- **`customMergeFunctions`**
+  - Allows specifying custom merge functions for handling specific types or structures during the merge process.
+  - Each key in this object corresponds to the constructor name of the value to be merged.
+  - The function assigned to each key is used to merge values of that type.
+  - **Key**: The constructor name of the values to be merged (e.g., "Date").
+  - **Value**: A function that takes two parameters (`targetVal`, `sourceVal`) and returns the merged result.
 
 ## Issues
 
