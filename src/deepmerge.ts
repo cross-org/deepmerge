@@ -24,6 +24,10 @@ interface DeepMergeOptions {
     arrayMergeStrategy?: "combine" | "unique" | "replace";
     setMergeStrategy?: "combine" | "replace";
     mapMergeStrategy?: "combine" | "replace";
+    customMergeFunctions?: {
+        // deno-lint-ignore no-explicit-any
+        [key: string]: (targetVal: any, sourceVal: any) => any; // For custom functions
+    };
 }
 
 /**
@@ -154,7 +158,15 @@ function deepMergeCore<T>(
         for (const key in source) {
             const sourceValue = source[key];
 
-            if (sourceValue instanceof Map) {
+            if (
+                sourceValue && options.customMergeFunctions &&
+                options.customMergeFunctions[sourceValue.constructor.name]
+            ) {
+                (current as MergeableObject)[key] = options.customMergeFunctions[sourceValue.constructor.name](
+                    (current as MergeableObject)[key],
+                    sourceValue,
+                );
+            } else if (sourceValue instanceof Map) {
                 switch (options.mapMergeStrategy) {
                     case "replace":
                         (current as MergeableObject)[key] = new Map(sourceValue as MergeableMap);
