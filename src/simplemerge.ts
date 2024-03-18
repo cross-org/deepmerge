@@ -36,6 +36,10 @@ function simpleMergeCore<T>(current: T, visited: WeakMap<object, any>, ...source
     if (!sources.length) return current;
     const source = sources.shift() as T;
 
+    if (source === undefined || source === null) {
+        return simpleMergeCore(current, visited, ...sources);
+    }
+
     if (isObject(source)) {
         if (visited.has(source as object)) {
             return visited.get(source as object) as T;
@@ -47,10 +51,14 @@ function simpleMergeCore<T>(current: T, visited: WeakMap<object, any>, ...source
             const sourceValue = source[key];
 
             if (isObject(sourceValue)) {
-                (current as T)[key] = (current as any)[key] || {};
-                (current as T)[key] = simpleMergeCore((current as T)[key] as any, visited, sourceValue);
+                (current as Record<string, any>)[key] = (current as any)[key] || {};
+                (current as Record<string, any>)[key] = simpleMergeCore(
+                    (current as Record<string, any>)[key] as any,
+                    visited,
+                    sourceValue,
+                );
             } else {
-                (current as T)[key] = sourceValue;
+                (current as Record<string, any>)[key] = sourceValue;
             }
         }
     } else {

@@ -176,6 +176,10 @@ function deepMergeCore<T>(
     if (!sources.length) return current;
     const source = sources.shift() as MergeableObject;
 
+    if (source === undefined || source === null) {
+        return deepMergeCore(current, options, visited, ...sources);
+    }
+
     if (isObject(source)) {
         if (visited.has(source)) {
             return visited.get(source) as T;
