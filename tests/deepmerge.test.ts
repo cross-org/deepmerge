@@ -85,13 +85,12 @@ test("Map Replace", () => {
 });
 
 test("Basic deepMerge scenario with undefined", () => {
-
     const obj1 = {
-        arr: [1, 2, 3]
+        arr: [1, 2, 3],
     };
 
     const obj2 = {
-        arr: [3, 4, 5]
+        arr: [3, 4, 5],
     };
 
     const merged = deepMerge(obj1, undefined, obj2);
