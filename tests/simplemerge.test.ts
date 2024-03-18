@@ -33,3 +33,18 @@ test("Basic simpleMerge scenario", () => {
     assertEquals(merged.b!.d, 3);
     assertEquals(merged.b!.e, 3);
 });
+
+test("Basic simpleMerge scenario with undefined", () => {
+    const obj1 = {
+        arr: [1, 2, 3],
+    };
+
+    const obj2 = {
+        arr: [3, 4, 5],
+    };
+
+    const merged = simpleMerge(obj1, undefined, obj2);
+    const mergedObj = merged!;
+
+    assertEquals(Array.from(mergedObj.arr), [3, 4, 5]);
+});

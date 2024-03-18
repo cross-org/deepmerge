@@ -83,3 +83,18 @@ test("Map Replace", () => {
 
     assertEquals(Array.from(merged.myMap), [["y", 3]]);
 });
+
+test("Basic deepMerge scenario with undefined", () => {
+    const obj1 = {
+        arr: [1, 2, 3],
+    };
+
+    const obj2 = {
+        arr: [3, 4, 5],
+    };
+
+    const merged = deepMerge(obj1, undefined, obj2);
+    const mergedObj = merged!;
+
+    assertEquals(Array.from(mergedObj.arr), [1, 2, 3, 3, 4, 5]);
+});
