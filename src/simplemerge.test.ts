@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert";
 import { test } from "@cross/test";
-import { simpleMerge } from "../mod.ts";
+import { simpleMerge } from "./simplemerge.ts";
 
 test("Basic simpleMerge scenario", () => {
     interface MergeableObj {

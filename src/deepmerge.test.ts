@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert";
 import { test } from "@cross/test";
-import { deepMerge, DeepMergeOptions } from "../mod.ts";
+import { deepMerge, DeepMergeOptions } from "./deepmerge.ts";
 
 test("Basic deepMerge scenario", () => {
     const options: DeepMergeOptions = {

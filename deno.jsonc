@@ -1,10 +1,10 @@
 {
     "name": "@cross/deepmerge",
-    "version": "0.2.2",
+    "version": "1.0.0",
     "exports": "./mod.ts",
 
     "tasks": {
-        "test": "cd tests && deno test",
+        "test": "deno test",
         "publish-dry": "deno publish --dry-run"
     },
     "lock": false,
