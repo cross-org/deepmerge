@@ -11,7 +11,8 @@ customization options for handling array, Set, and Map merging strategies.
 
 Follow the library on [JSR.io](https://jsr.io/@cross/deepmerge)
 
-Part of the @cross suite - check out our growing collection of cross-runtime tools at [github.com/cross-org](https://github.com/cross-org).
+Part of the @cross suite - check out our growing collection of cross-runtime tools at
+[github.com/cross-org](https://github.com/cross-org).
 
 ## Features
 
