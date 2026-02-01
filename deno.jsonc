@@ -16,5 +16,5 @@
     "publish": {
         "exclude": [".github", "*.test.ts"]
     },
-    "imports": { "@cross/test": "jsr:@cross/test@^0.0.9", "@std/assert": "jsr:@std/assert@^0.220.1" }
+    "imports": { "@cross/test": "jsr:@cross/test@^0.0.14", "@std/assert": "jsr:@std/assert@^1.0.18" }
 }
