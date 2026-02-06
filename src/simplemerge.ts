@@ -5,7 +5,13 @@
  * @returns {boolean} True if the item is a plain object, false otherwise.
  */
 function isObject(item: unknown): boolean {
-    return typeof item === "object" && item !== null && !Array.isArray(item);
+    if (typeof item !== "object" || item === null || Array.isArray(item)) {
+        return false;
+    }
+    if (item instanceof Map || item instanceof Set) {
+        return false;
+    }
+    return true;
 }
 
 /**
