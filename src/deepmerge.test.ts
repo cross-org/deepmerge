@@ -98,3 +98,72 @@ test("Basic deepMerge scenario with undefined", () => {
 
     assertEquals(Array.from(mergedObj.arr), [1, 2, 3, 3, 4, 5]);
 });
+
+test("Date keepEarlier", () => {
+    const earlier = new Date("2023-01-01");
+    const later = new Date("2024-06-15");
+    const obj1 = { date: earlier };
+    const obj2 = { date: later };
+    const merged = deepMerge.withOptions({ dateMergeStrategy: "keepEarlier" }, obj1, obj2);
+
+    assertEquals(merged.date.getTime(), earlier.getTime());
+});
+
+test("Date keepLater", () => {
+    const earlier = new Date("2023-01-01");
+    const later = new Date("2024-06-15");
+    const obj1 = { date: later };
+    const obj2 = { date: earlier };
+    const merged = deepMerge.withOptions({ dateMergeStrategy: "keepLater" }, obj1, obj2);
+
+    assertEquals(merged.date.getTime(), later.getTime());
+});
+
+test("customMergeFunctions overrides Date and Array", () => {
+    const options: DeepMergeOptions = {
+        customMergeFunctions: {
+            Date: (targetVal, sourceVal) => (targetVal > sourceVal ? targetVal : sourceVal),
+            Array: (targetArr, sourceArr) => {
+                const t = Array.isArray(targetArr) ? targetArr : [];
+                const s = Array.isArray(sourceArr) ? sourceArr : [];
+                return [...new Set([...t, ...s])];
+            },
+        },
+    };
+    const obj1 = {
+        date: new Date("2023-06-01"),
+        arr: [1, 2, 2, 3],
+    };
+    const obj2 = {
+        date: new Date("2024-01-01"),
+        arr: [2, 3, 4],
+    };
+    const merged = deepMerge.withOptions(options, obj1, obj2);
+
+    assertEquals(merged.date.getTime(), new Date("2024-01-01").getTime());
+    assertEquals(merged.arr, [1, 2, 3, 4]);
+});
+
+test("circular reference - object referencing itself", () => {
+    const obj: Record<string, unknown> = { a: 1, b: { c: 2 } };
+    obj.self = obj;
+
+    const merged = deepMerge(obj);
+    assertEquals(merged.a, 1);
+    assertEquals((merged.b as Record<string, unknown>).c, 2);
+    assertEquals(merged.self, merged);
+});
+
+test("circular reference - A references B references A", () => {
+    const a: Record<string, unknown> = { id: "a", x: 1 };
+    const b: Record<string, unknown> = { id: "b", y: 2 };
+    a.ref = b;
+    b.ref = a;
+
+    const merged = deepMerge(a);
+    assertEquals(merged.id, "a");
+    assertEquals(merged.x, 1);
+    assertEquals((merged.ref as Record<string, unknown>).id, "b");
+    assertEquals((merged.ref as Record<string, unknown>).y, 2);
+    assertEquals((merged.ref as Record<string, unknown>).ref, merged);
+});
