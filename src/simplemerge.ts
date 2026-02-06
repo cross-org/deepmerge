@@ -34,10 +34,10 @@ export function simpleMerge<T>(...sources: T[]): T {
  */
 function simpleMergeCore<T>(current: T, visited: WeakMap<object, any>, ...sources: T[]): T {
     if (!sources.length) return current;
-    const source = sources.shift() as T;
+    const [source, ...rest] = sources;
 
     if (source === undefined || source === null) {
-        return simpleMergeCore(current, visited, ...sources);
+        return simpleMergeCore(current, visited, ...rest);
     }
 
     if (isObject(source)) {
@@ -65,5 +65,5 @@ function simpleMergeCore<T>(current: T, visited: WeakMap<object, any>, ...source
         return source as T;
     }
 
-    return simpleMergeCore(current, visited, ...sources);
+    return simpleMergeCore(current, visited, ...rest);
 }

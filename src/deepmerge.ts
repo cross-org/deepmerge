@@ -7,23 +7,25 @@
 /**
  * Optional options interface to control the deep merge process.
  *
- ** **`arrayMergeStrategy`**
+ * * **`arrayMergeStrategy`**
  *     * **"combine"**: (default behavior) Appends arrays, preserving duplicates.
  *     * **"unique"**: Creates an array with only unique elements.
  *     * **"replace"**: Substitutes the target array entirely with the source array.
  *
- ** **`setMergeStrategy`**
+ * * **`setMergeStrategy`**
  *     * **"combine"**: (default behavior) Adds new members to the target Set.
  *     * **"replace"**: Overwrites the target Set with the source Set.
  *
- ** **`mapMergeStrategy`**
+ * * **`mapMergeStrategy`**
  *     * **"combine"**: (default behavior) Merges with the source Map, replacing values for matching keys.
  *     * **"replace"**: Overwrites the target Map with the source Map.
- ** **`dateMergeStrategy`**
+ *
+ * * **`dateMergeStrategy`**
  *     * **"replace"**: (default behavior) Overwrites the target Date with the source Date.
  *     * **"keepEarlier"**: Keeps the earlier Date
  *     * **"keepLater"**: Keeps the later Date
- ** **`customMergeFunctions`**
+ *
+ * * **`customMergeFunctions`**
  *     * Allows specifying custom merge functions for handling specific types or structures during the merge process.
  *     * Each key in this object corresponds to the constructor name of the value to be merged.
  *     * The function assigned to each key is used to merge values of that type.
@@ -174,10 +176,10 @@ function deepMergeCore<T>(
     ...sources: T[]
 ): T {
     if (!sources.length) return current;
-    const source = sources.shift() as MergeableObject;
+    const [source, ...rest] = sources;
 
     if (source === undefined || source === null) {
-        return deepMergeCore(current, options, visited, ...sources);
+        return deepMergeCore(current, options, visited, ...rest);
     }
 
     if (isObject(source)) {
@@ -280,7 +282,7 @@ function deepMergeCore<T>(
         return source as T;
     }
 
-    return deepMergeCore(current, options, visited, ...sources);
+    return deepMergeCore(current, options, visited, ...rest);
 }
 
 export { deepMerge };
