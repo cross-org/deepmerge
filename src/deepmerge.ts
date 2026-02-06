@@ -60,6 +60,13 @@ interface DeepMergeOptions {
     };
 }
 
+const DEFAULT_OPTIONS: DeepMergeOptions = {
+    arrayMergeStrategy: "combine",
+    setMergeStrategy: "combine",
+    mapMergeStrategy: "combine",
+    dateMergeStrategy: "replace",
+};
+
 /**
  * Represents basic primitive JavaScript data types.
  */
@@ -142,7 +149,7 @@ function isObject(item: unknown): item is MergeableObject {
 function deepMerge<T>(...sources: T[]): T {
     const result = {} as T;
     const visited = new WeakMap<object, MergeableValue>();
-    return deepMergeCore(result, {}, visited, ...sources);
+    return deepMergeCore(result, { ...DEFAULT_OPTIONS }, visited, ...sources);
 }
 
 /**
@@ -156,7 +163,7 @@ function deepMerge<T>(...sources: T[]): T {
 deepMerge.withOptions = function <T>(options: DeepMergeOptions, ...sources: T[]): T {
     const result = {} as T;
     const visited = new WeakMap<object, MergeableValue>();
-    return deepMergeCore(result, options, visited, ...sources);
+    return deepMergeCore(result, { ...DEFAULT_OPTIONS, ...options }, visited, ...sources);
 };
 
 /**
