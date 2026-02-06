@@ -1,6 +1,6 @@
 {
     "name": "@cross/deepmerge",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "exports": "./mod.ts",
     "tasks": {
         "check": "deno fmt --check && deno lint && deno check mod.ts && deno task test && deno task check-deps --slim",
